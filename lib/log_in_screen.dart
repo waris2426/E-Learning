@@ -13,18 +13,51 @@ class LogInScreen extends StatefulWidget {
 
 class _LogInScreenState extends State<LogInScreen> {
   bool _obsecureText = true;
-
+  var _emailController = TextEditingController();
+  var _passwordController = TextEditingController();
+  bool _isValidPassword = false;
+  bool _isValidEmail = false;
+  String _passwordErrorMessage = '';
+  String _emailErrorMessage = '';
 
   @override
   Widget build(BuildContext context) {
-    var _emailController = TextEditingController();
-    var _passwordController = TextEditingController();
 
-    void _login(){
-      String email = _emailController.text.trim();
+
+    bool _emailValiddation(String email){
+      _emailErrorMessage = '';
+      final bool emailValid =
+      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          .hasMatch(email);
       if(email.isEmpty){
-        showError(email);
+       // showError("Please enter email");
+        _emailErrorMessage += 'Please enter email';
+      } if(!emailValid) {
+        //showError("please enter valid email");
+        _emailErrorMessage += 'please enter valid email (example@gmail.com)';
       }
+      return _emailErrorMessage.isEmpty;
+    }
+    bool _passwordValidation(String password){
+      _passwordErrorMessage = '';
+      if(password.length < 6){
+       // showError("password must be less than six characters");
+         _passwordErrorMessage += 'password must be less than six characters';
+      } if(!password.contains(RegExp(r'[A-Z]'))){
+       // showError("upper case letter");
+        _passwordErrorMessage += 'atleast one upper case letter';
+      } if(!password.contains(RegExp(r'[a-z]'))){
+       // showError("upper case letter");
+        _passwordErrorMessage += 'atleast one lower case letter';
+      } if(!password.contains(RegExp(r'[0-9]'))){
+        //showError("atleast one digit enter digit");
+        _passwordErrorMessage += 'atleast one digit';
+      } if(!password.contains(RegExp(r'[[!@#%^&*(),.?":{}|<>]'))){
+       // showError("please enter special characters");
+        _passwordErrorMessage += 'atleast one special character';
+      }
+        return _passwordErrorMessage.isEmpty;
+
     }
     return SafeArea(
       child: Scaffold(
@@ -37,51 +70,58 @@ class _LogInScreenState extends State<LogInScreen> {
                 SizedBox(height: 10,),
                 Center(child: Text("Hi! Welcome back, You've been missed", style: TextStyle(fontSize: 14, color: Colors.grey),)),
                 SizedBox(height: 40,),
-                Form(
-                    child:
-                    Column(children: [
-                      Align(alignment: Alignment.topLeft,child: Text('Email')),
-                      TextField(
-                        controller: _passwordController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                         // labelText: "Email",
-                          hintText: "example@gmail.com",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(color: Colors.grey),
-                          )
-                        )
-                      ),
-                      SizedBox(height: 10,),
-                      Align(alignment: Alignment.topLeft,child: Text('Password')),
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                         // labelText: "Email",
-                          hintText: "**********",
-                            suffixIcon: IconButton(
-                              onPressed: (){
-                               setState(() {
-                                 _obsecureText = ! _obsecureText;
-                               });
-                              },
-                              icon: Icon(_obsecureText ? Icons.visibility : Icons.visibility_off),),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: Colors.grey),
-                          )
-                        )
-                      ),
-                                ],)),
+                Column(children: [
+                  Align(alignment: Alignment.topLeft,child: Text('Email')),
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                     // labelText: "Email",
+                      hintText: "example@gmail.com",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide(color: Colors.grey),
+                      )
+                    )
+                  ),
+                  SizedBox(height: 10,),
+                  Align(alignment: Alignment.topLeft,child: Text('Password')),
+                  TextField(
+                    controller: _passwordController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                     //labelText: "Example@",
+                      hintText: "**********",
+                        suffixIcon: IconButton(
+                          onPressed: (){
+                           setState(() {
+                             _obsecureText = ! _obsecureText;
+                           });
+                          },
+                          icon: Icon(_obsecureText ? Icons.visibility : Icons.visibility_off),),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: Colors.grey),
+                      )
+                    )
+                  ),
+                            ],),
                 SizedBox(height: 10,),
                 Align(alignment: Alignment.topRight,child: Text("Forgot Password?", style: TextStyle(fontSize: 14,decoration: TextDecoration.underline,decorationColor: Colors.lightBlue, color: Colors.lightBlue,))),
                 SizedBox(height: 30,),
                 GestureDetector(
                 onTap: (){
-                 _login();
-
+                  String password = _passwordController.text.trim();
+                  String email = _emailController.text.trim();
+                  _isValidPassword = _passwordValidation(password);
+                  _isValidEmail = _emailValiddation(email);
+                  if(!_isValidEmail){
+                    showError(_emailErrorMessage);
+                  }else if(!_isValidPassword){
+                    showError(_passwordErrorMessage);
+                  }else{
+                    showError("validation done");
+                  }
                 },
                   child: Container(
                     height: 50,
