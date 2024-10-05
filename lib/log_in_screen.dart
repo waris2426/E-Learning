@@ -1,3 +1,4 @@
+import 'package:e_learning_app/home_screen.dart';
 import 'package:e_learning_app/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -121,7 +122,9 @@ class _LogInScreenState extends State<LogInScreen> {
                   }else if(!_isValidPassword){
                     showError(_passwordErrorMessage);
                   }else{
-                    showError("validation done");
+                    CircularProgressIndicator(color: Colors.white,);
+                    showError("Log In Successfully");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   }
                 },
                   child: Container(
