@@ -1,3 +1,4 @@
+import 'package:e_learning_app/home_screen.dart';
 import 'package:e_learning_app/log_in_screen.dart';
 import 'package:e_learning_app/verify_code_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,54 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _obsecureText = true;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  var _nameController = TextEditingController();
+  var _emailController = TextEditingController();
+  var _passwordController = TextEditingController();
   bool _isChecked = false;
+  String _emailErrorMessage = '';
+  String _passwordErrorMessage = '';
+  bool _isValidPassword = false;
+  bool _isValidEmail = false;
+
+
   @override
   Widget build(BuildContext context) {
+
+    bool _emailValiddation(String email){
+      _emailErrorMessage = '';
+      final bool emailValid =
+      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          .hasMatch(email);
+      if(email.isEmpty){
+        // showError("Please enter email");
+        _emailErrorMessage += 'Please enter email';
+      }else if(!emailValid) {
+        //showError("please enter valid email");
+        _emailErrorMessage += 'please enter valid email (example@gmail.com)';
+      }
+      return _emailErrorMessage.isEmpty;
+    }
+    bool _passwordValidation(String password){
+      _passwordErrorMessage = '';
+      if(password.length < 6){
+        // showError("password must be less than six characters");
+        _passwordErrorMessage += 'password must be less than six characters';
+      }else if(!password.contains(RegExp(r'[A-Z]'))){
+        // showError("upper case letter");
+        _passwordErrorMessage += 'atleast one upper case letter';
+      }else if(!password.contains(RegExp(r'[a-z]'))){
+        // showError("upper case letter");
+        _passwordErrorMessage += 'atleast one lower case letter';
+      }else if(!password.contains(RegExp(r'[0-9]'))){
+        //showError("atleast one digit enter digit");
+        _passwordErrorMessage += 'atleast one digit';
+      }else if(!password.contains(RegExp(r'[[!@#%^&*(),.?":{}|<>]'))){
+        // showError("please enter special characters");
+        _passwordErrorMessage += 'atleast one special character';
+      }
+      return _passwordErrorMessage.isEmpty;
+
+    }
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -53,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(height: 10,),
                       Align(alignment: Alignment.topLeft,child: Text('Email')),
                       TextField(
-                          controller: _passwordController,
+                          controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             // labelText: "Email",
@@ -67,8 +110,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(height: 10,),
                       Align(alignment: Alignment.topLeft,child: Text('Password')),
                       TextField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.number,
+                          controller: _passwordController,
+                          keyboardType: TextInputType.text,
+                          obscureText: _obsecureText,
                           decoration: InputDecoration(
                             // labelText: "Email",
                               hintText: "**********",
@@ -78,7 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     _obsecureText = ! _obsecureText;
                                   });
                                 },
-                                icon: Icon(_obsecureText ? Icons.visibility : Icons.visibility_off),),
+                                icon: Icon(_obsecureText ? Icons.visibility_off : Icons.visibility),),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 borderSide: BorderSide(color: Colors.grey),
@@ -103,14 +147,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ],
                 ),
                 SizedBox(height: 30,),
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
+                GestureDetector(
+                  onTap: (){
+                    String name = _nameController.text.trim();
+                    String email = _emailController.text.trim();
+                    String password = _passwordController.text.trim();
+                    _isValidEmail = _emailValiddation(email);
+                    _isValidPassword = _passwordValidation(password);
+                    if(name.isEmpty){
+                      showError("please enter Name");
+                    }else if(!_isValidEmail){
+                      showError(_emailErrorMessage);
+                    }else if(!_isValidPassword){
+                      showError(_passwordErrorMessage);
+                    }else if(!_isChecked){
+                      showError("Are you agree with terms and conditions");
+                    }else{
+                      showError("Registration Successfull");
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    }
+                  },
+                  child: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
 
-                  child: Center(child: Text("Sign Up", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)),
+                    child: Center(child: Text("Sign Up", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),)),
+                  ),
                 ),
                 SizedBox(height: 30,),
                 Padding(
@@ -180,6 +245,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+  void showError(String error){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error),
       ),
     );
   }
