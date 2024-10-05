@@ -32,7 +32,7 @@ class _LogInScreenState extends State<LogInScreen> {
       if(email.isEmpty){
        // showError("Please enter email");
         _emailErrorMessage += 'Please enter email';
-      } if(!emailValid) {
+      }else if(!emailValid) {
         //showError("please enter valid email");
         _emailErrorMessage += 'please enter valid email (example@gmail.com)';
       }
@@ -43,16 +43,16 @@ class _LogInScreenState extends State<LogInScreen> {
       if(password.length < 6){
        // showError("password must be less than six characters");
          _passwordErrorMessage += 'password must be less than six characters';
-      } if(!password.contains(RegExp(r'[A-Z]'))){
+      }else if(!password.contains(RegExp(r'[A-Z]'))){
        // showError("upper case letter");
         _passwordErrorMessage += 'atleast one upper case letter';
-      } if(!password.contains(RegExp(r'[a-z]'))){
+      }else if(!password.contains(RegExp(r'[a-z]'))){
        // showError("upper case letter");
         _passwordErrorMessage += 'atleast one lower case letter';
-      } if(!password.contains(RegExp(r'[0-9]'))){
+      }else if(!password.contains(RegExp(r'[0-9]'))){
         //showError("atleast one digit enter digit");
         _passwordErrorMessage += 'atleast one digit';
-      } if(!password.contains(RegExp(r'[[!@#%^&*(),.?":{}|<>]'))){
+      }else if(!password.contains(RegExp(r'[[!@#%^&*(),.?":{}|<>]'))){
        // showError("please enter special characters");
         _passwordErrorMessage += 'atleast one special character';
       }
@@ -89,16 +89,17 @@ class _LogInScreenState extends State<LogInScreen> {
                   TextField(
                     controller: _passwordController,
                     keyboardType: TextInputType.text,
+                    obscureText: _obsecureText,
                     decoration: InputDecoration(
                      //labelText: "Example@",
-                      hintText: "**********",
+                        hintText: "**********",
                         suffixIcon: IconButton(
                           onPressed: (){
                            setState(() {
-                             _obsecureText = ! _obsecureText;
+                             _obsecureText =  !_obsecureText;
                            });
                           },
-                          icon: Icon(_obsecureText ? Icons.visibility : Icons.visibility_off),),
+                          icon: Icon(_obsecureText ? Icons.visibility_off : Icons.visibility),),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(color: Colors.grey),
